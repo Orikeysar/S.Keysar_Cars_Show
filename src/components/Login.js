@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Login = ({ setIsAuthenticated }) => {
   const [password, setPassword] = useState('');
@@ -8,19 +7,14 @@ const Login = ({ setIsAuthenticated }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      
-      if (password === process.env.ADMIN_PASSWORD) {
+      if (password === "sksk1212") {
         setIsAuthenticated(true);
         navigate('/AdminAddCars');
       } else {
         alert('סיסמה לא נכונה');
       }
-    } catch (error) {
-      console.error('Error logging in:', error);
-      alert('אירעה שגיאה במהלך ההתחברות');
     }
-  };
+ 
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
