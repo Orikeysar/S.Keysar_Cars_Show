@@ -9,8 +9,8 @@ const Login = ({ setIsAuthenticated }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, { password });
-      if (response.data.authenticated) {
+      
+      if (password === process.env.ADMIN_PASSWORD) {
         setIsAuthenticated(true);
         navigate('/AdminAddCars');
       } else {
