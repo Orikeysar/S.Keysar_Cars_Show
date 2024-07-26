@@ -7,14 +7,14 @@ const Login = ({ setIsAuthenticated }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-      if (password === "sksk1212") {
-        setIsAuthenticated(true);
-        navigate('/AdminAddCars');
-      } else {
-        alert('סיסמה לא נכונה');
-      }
+    if (password === process.env.REACT_APP_ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      console.log('Login successful, navigating to /AdminAddCars');
+      navigate('/AdminAddCars');
+    } else {
+      alert('סיסמה לא נכונה');
     }
- 
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

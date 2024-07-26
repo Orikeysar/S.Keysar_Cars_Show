@@ -1,4 +1,3 @@
-// src/index.js
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -6,13 +5,18 @@ import App from './App';
 import AdminAddCars from './components/AdminAddCars';
 import Login from './components/Login';
 import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const getIsAuthenticated = () => {
-  return localStorage.getItem('isAuthenticated') === 'true';
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  console.log('getIsAuthenticated:', isAuthenticated);
+  return isAuthenticated;
 };
 
 const PrivateRoute = ({ element }) => {
-  return getIsAuthenticated() ? element : <Navigate to="/login" replace />;
+  const isAuthenticated = getIsAuthenticated();
+  console.log('PrivateRoute isAuthenticated:', isAuthenticated);
+  return isAuthenticated ? element : <Navigate to="/login" replace />;
 };
 
 const RootComponent = () => {
@@ -25,6 +29,7 @@ const RootComponent = () => {
     } else {
       localStorage.removeItem('isAuthenticated');
     }
+    console.log('handleSetIsAuthenticated:', value);
   };
 
   return (
