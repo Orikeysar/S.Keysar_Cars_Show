@@ -11,6 +11,7 @@ const Login = ({ setIsAuthenticated }) => {
       setIsAuthenticated(true);
       console.log('Login successful, navigating to /AdminAddCars');
       navigate('/AdminAddCars');
+
     } else {
       alert('סיסמה לא נכונה');
     }
