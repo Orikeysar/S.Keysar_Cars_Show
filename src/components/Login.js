@@ -7,14 +7,8 @@ const Login = ({ setIsAuthenticated }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (password === process.env.REACT_APP_ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      console.log('Login successful, navigating to /AdminAddCars');
-      navigate('/AdminAddCars');
-
-    } else {
-      alert('סיסמה לא נכונה');
-    }
+    // הסרת הבדיקה של הסיסמה
+    navigate('/AdminAddCars');
   };
 
   return (

@@ -3,22 +3,16 @@ import Layout from './Layout';
 import AddCarForm from './AddCarForm';
 import Filter from './Filter';
 import { getCars, addCar, deleteCar } from '../services/carService';
-import { useNavigate } from 'react-router-dom';
 import CarItem from './CarItem';
-
 
 function AdminAddCars() {
   const [cars, setCars] = useState([]);
   const [filteredCars, setFilteredCars] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
-  
-      fetchCars();
-   
-  }, [navigate]);
+    fetchCars();
+  }, []);
 
-  
   const fetchCars = async () => {
     try {
       const cars = await getCars();
@@ -71,23 +65,15 @@ function AdminAddCars() {
     setFilteredCars(filtered);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/login');
-  };
-
   return (
     <Layout>
       <div className="text-center">
         <h2 className="text-3xl mb-4">פורמט הוספת ומחיקת רכבים</h2>
-        <button onClick={handleLogout} className="p-2 bg-red-500 text-white rounded mb-4">
-          Logout
-        </button>
         <AddCarForm onAdd={handleAddCar} />
         <Filter onFilter={handleFilter} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           {Array.isArray(filteredCars) && filteredCars.map((car) => (
-            <CarItem key={car._id} car={car} handleDeleteCar={handleDeleteCar} />
+            <CarItem key={car.id} car={car} handleDeleteCar={handleDeleteCar} />
           ))}
         </div>
       </div>
