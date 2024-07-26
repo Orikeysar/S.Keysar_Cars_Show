@@ -1,14 +1,12 @@
 // src/components/AddCarForm.js
-import React, { useState, useEffect, useRef } from 'react';
-import { db, storage, auth } from '../firebase.config';
+import React, { useState } from 'react';
+import { db, storage } from '../firebase.config';
 import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Spinner from './Spinner';
 
@@ -27,24 +25,6 @@ const AddCarForm = ({ onAdd }) => {
     isElectric: false,
   });
   const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const auth = getAuth();
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    if (isMounted) {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setFormData((prevState) => ({ ...prevState, userRef: user.uid }));
-        } else {
-          navigate('/login');
-        }
-      });
-    }
-    return () => {
-      isMounted.current = false;
-    };
-  }, [isMounted, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,7 +72,6 @@ const AddCarForm = ({ onAdd }) => {
       });
       setError('');
       setLoading(false);
-      navigate('/AdminAddCars');
     } catch (e) {
       console.error('Error adding document: ', e);
       setLoading(false);
