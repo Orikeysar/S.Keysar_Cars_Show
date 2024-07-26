@@ -57,7 +57,6 @@ const AddCarForm = ({ onAdd }) => {
       };
 
       await addDoc(collection(db, 'cars'), carData);
-      onAdd(carData);
       setFormData({
         make: '',
         model: '',
@@ -72,6 +71,7 @@ const AddCarForm = ({ onAdd }) => {
       });
       setError('');
       setLoading(false);
+      window.location.reload();
     } catch (e) {
       console.error('Error adding document: ', e);
       setLoading(false);
