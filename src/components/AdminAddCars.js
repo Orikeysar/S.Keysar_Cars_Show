@@ -5,8 +5,7 @@ import Filter from './Filter';
 import { getCars, addCar, deleteCar } from '../services/carService';
 import { useNavigate } from 'react-router-dom';
 import CarItem from './CarItem';
-import { db } from '../firebase.config'
-import { getDoc, doc } from 'firebase/firestore'
+
 
 function AdminAddCars() {
   const [cars, setCars] = useState([]);

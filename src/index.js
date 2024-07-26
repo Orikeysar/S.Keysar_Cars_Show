@@ -1,3 +1,4 @@
+// src/index.js
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -5,7 +6,6 @@ import App from './App';
 import AdminAddCars from './components/AdminAddCars';
 import Login from './components/Login';
 import './index.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const getIsAuthenticated = () => {
   return localStorage.getItem('isAuthenticated') === 'true';
