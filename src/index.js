@@ -12,7 +12,7 @@ const RootComponent = () => {
     <Router>
       <Routes>
         <Route path="/AdminAddCars" element={<AdminAddCars />} />
-        <Route path="/login" element={<Login />} />
+     
         <Route path="/" element={<App/>} />
         <Route path="*" element={<App/>} />
       </Routes>
