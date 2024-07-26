@@ -13,11 +13,9 @@ function AdminAddCars() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!localStorage.getItem('isAuthenticated')) {
-      navigate('/login');
-    } else {
+  
       fetchCars();
-    }
+   
   }, [navigate]);
 
   

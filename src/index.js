@@ -38,6 +38,7 @@ const RootComponent = () => {
         <Route path="/AdminAddCars" element={<PrivateRoute element={<AdminAddCars />} />} />
         <Route path="/login" element={<Login setIsAuthenticated={handleSetIsAuthenticated} />} />
         <Route path="/" element={<App />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
