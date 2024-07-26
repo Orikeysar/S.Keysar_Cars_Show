@@ -71,7 +71,7 @@ const CarItem = ({ car, handleDeleteCar }) => {
         {location.pathname === '/AdminAddCars' && (
           <div className="text-center">
             <button
-              onClick={() => handleDeleteCar(car._id)}
+              onClick={() => handleDeleteCar(car.id)}
               className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
             >
               מחק רכב
