@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
        
         <div className="w-2/3 flex flex-col justify-start items-start">
           <h1 className="text-2xl w-full text-center">S.Keysar</h1>
-          <h1 className="text-2xl w-full text-right">קניה בטוחה לרכב שלך</h1>
+          <h1 className="text-2xl w-full text-center">הקניה בטוחה לרכב שלך</h1>
         </div>
         <div className="w-1/3 flex justify-end">
           <img src={Logo} alt="S.Keysar Logo" className=" h-14"/>

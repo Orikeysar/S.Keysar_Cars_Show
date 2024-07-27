@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
-import Modal from 'react-bootstrap/Modal';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import bootstrap CSS
-import { useLocation } from 'react-router-dom';
+import React, { useState } from "react";
+import Carousel from "react-bootstrap/Carousel";
+import Modal from "react-bootstrap/Modal";
+import "bootstrap/dist/css/bootstrap.min.css"; // Import bootstrap CSS
+import { useLocation } from "react-router-dom";
+import {
+  FaCarSide,
+  FaCalendarAlt,
+  FaHandPaper,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
+import { Collapse, Button } from "react-bootstrap";
 
 const CarItem = ({ car, handleDeleteCar }) => {
   const [showModal, setShowModal] = useState(false);
-  const [modalImage, setModalImage] = useState('');
+  const [modalImage, setModalImage] = useState("");
   const location = useLocation();
- 
+  //פתיחת פרטים נוספים.
+  const [open, setOpen] = useState(false);
+
 
   const handleImageClick = (image) => {
     setModalImage(`${image}`);
@@ -21,7 +31,7 @@ const CarItem = ({ car, handleDeleteCar }) => {
   if (car.carImages && Array.isArray(car.carImages)) {
     car.carImages?.forEach((image, index) => {
       carouselItems.push(
-        <Carousel.Item key={index}>
+        <Carousel.Item key={`${image}-${index}`}>
           <img
             src={image}
             alt={`Slide ${index}`}
@@ -34,41 +44,103 @@ const CarItem = ({ car, handleDeleteCar }) => {
   }
 
   return (
-    <div key={car._id} className="max-w-sm rounded overflow-hidden shadow-lg bg-white relative border border-gray-300 text-right">
-      <Carousel>
-        {carouselItems}
-      </Carousel>
+    <div
+      key={car._id}
+      className="max-w-sm rounded overflow-hidden shadow-lg bg-white relative border border-gray-300 text-right"
+    >
+      <Carousel>{carouselItems}</Carousel>
       {car.isElectric && (
         <div className="absolute top-0 right-0 bg-green-500 opacity-65 text-white px-3 py-2 text-s font-bold ">
           רכב חשמלי
         </div>
       )}
+      {car.isHybrid && (
+        <div className="absolute top-0 right-0 bg-green-500 opacity-65 text-white px-3 py-2 text-s font-bold ">
+          רכב היברידי
+        </div>
+      )}
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-bold text-gray-800">{car.make} {car.model}</h3>
-          <span className="text-red-500 text-lg font-semibold">₪{car.price}</span>
+          <h3 className="text-xl font-bold text-gray-800">
+            {car.make} {car.model}
+          </h3>
         </div>
-        <div className="text-gray-600 mb-2">
-          <div className="flex items-center justify-end mb-1">
-            <span>שנה: {car.year}</span>
-            <svg className="w-4 h-4 text-gray-500 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
-          </div>
-          <div className="flex items-center justify-end mb-1">
-            <span>קילומטר: {car.kilometer}</span>
-            <svg className="w-4 h-4 text-gray-500 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 19h16M4 10l6-6m0 0l6 6m-6-6v6"></path></svg>
-          </div>
-          <div className="flex items-center justify-end mb-1">
-            <span>יד: {car.hand}</span>
-            <svg className="w-4 h-4 text-gray-500 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17l-1-1-4 4m1-4H3v4m13-4h6m-1-4H3m9-8h-2l2-2m-2 2v6m9-6l-2-2m2 2h-6m-1 12v-4m4 4v-4"></path></svg>
-          </div>
-          <div className="flex items-center justify-end mb-1">
-            <span>סוג: {car.kind}</span>
+        <div className="text-gray-600 mb-4 mt-4 bg-gray-50 rounded-full border p-2  ">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center">
+              <span> {car.kilometer.toLocaleString()}</span>
+              <FaCarSide className="w-4 h-4 text-gray-500 ml-1" />
+            </div>
+
+            <div className="flex items-center">
+              <span>{car.hand} יד</span>
+              <FaHandPaper className="w-4 h-4 text-gray-500 ml-1" />
+            </div>
+
+            <div className="flex items-center">
+              <span>{car.year}</span>
+              <FaCalendarAlt className="w-4 h-4 text-gray-500 ml-1" />
+            </div>
           </div>
         </div>
-        <div className="bg-gray-100 rounded-full p-2 mb-4">
+        <div>
+          <Button
+            onClick={() => setOpen(!open)}
+            aria-controls="collapse-text"
+            aria-expanded={open}
+            variant="link"
+            className="text-gray-600 flex items-center"
+          >
+            <span>
+              {open ? (
+                <FaChevronUp className="ml-1 " />
+              ) : (
+                <FaChevronDown className="ml-1" />
+              )}
+            </span>
+            פרטים נוספים
+          </Button>
+          <Collapse in={open}>
+            <div id="collapse-text" className="mb-4">
+              {/* כאן תוסיף את פרטי המכונית הנוספים */}
+              <div className="flex items-center justify-end mb-1">
+                בעלות נוחכית:  {car.Ownershep}
+              </div>
+              <div className="flex items-center justify-end mb-1">
+               נפח מנוע:  {car.EngineCapacity}
+              </div>
+              <div className="flex items-center justify-end mb-1">
+                סוג מנוע:  {car.EngineKind}
+              </div>
+              <div className="flex items-center justify-end mb-1 ">
+                גיר:  {car.Gear}
+              </div>
+              <div className="flex items-center justify-end mb-1">
+                {" "}
+                סוג:  {car.kind}
+              </div>
+              {car.isElectric && (
+                <div className="flex items-center justify-center mb-1 rounded font-bold text-white bg-green-400">
+                  רכב זה חשמלי{" "}
+                </div>
+              )}
+              {car.isHybrid && (
+                <div className="flex items-center justify-center mb-1 rounded font-bold text-white bg-green-400">
+                  רכב זה היברידי{" "}
+                </div>
+              )}
+
+              {/* תוכל להוסיף כל פרטים נוספים שתרצה כאן */}
+            </div>
+          </Collapse>
+        </div>
+        <div className="border rounded-md p-2 mb-4">
           <p className="text-gray-700 text-base">{car.description}</p>
         </div>
-        {location.pathname === '/AdminAddCars' && (
+        <div className="text-red-500 text-2xl font-semibold text-center underline blink">
+          ₪{car.price.toLocaleString()}
+        </div>{" "}
+        {location.pathname === "/AdminAddCars" && (
           <div className="text-center">
             <button
               onClick={() => handleDeleteCar(car.id)}
@@ -83,23 +155,13 @@ const CarItem = ({ car, handleDeleteCar }) => {
       {/* Modal for image popup */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
-          <Modal.Title className='text-right'>תמונת {car.make}-{car.model}</Modal.Title>
+          <Modal.Title className="text-right">
+            תמונת {car.make}-{car.model}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        if (car.carImages && Array.isArray(car.carImages)) {
-    car.carImages?.forEach((image, index) => {
-      carouselItems.push(
-        <Carousel.Item key={index}>
-          <img
-            src={image}
-            alt={`Slide ${index}`}
-            className="w-full h-64 object-cover cursor-pointer"
-            onClick={() => handleImageClick(image)}
-          />
-        </Carousel.Item>
-      )
-    })
-  }
+          
+        <Carousel>{carouselItems}</Carousel>
         </Modal.Body>
       </Modal>
     </div>
