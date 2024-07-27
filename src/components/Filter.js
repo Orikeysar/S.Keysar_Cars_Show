@@ -7,11 +7,22 @@ const Filter = ({ onFilter }) => {
   const [maxKilometer, setMaxKilometer] = useState('');
   const [maxYear, setMaxYear] = useState('');
   const [showFilter, setShowFilter] = useState(false);
-
+  const [isElectric, setIsElectric] = useState(false);
+  const [isHybrid, setIsHybrid] = useState(false);
   const handleFilter = () => {
-    onFilter({ kind, maxPrice, maxKilometer, maxYear });
+    onFilter({ kind, maxPrice, maxKilometer, maxYear,isElectric,isHybrid });
   }
-
+  //בודק אם סונן לפי חשמלי או היברידי
+  const handleKindChange = (e) => {
+    const value = e.target.value;
+    if(value === 'חשמלי'){
+      setIsElectric(true)
+    }else if(value === 'היברידי'){
+      setIsHybrid(true)
+    }else{
+      setKind(value);
+    } 
+  };
   return (
     <div className="p-4">
       <button
@@ -31,7 +42,7 @@ const Filter = ({ onFilter }) => {
               <label className="block text-right">:סוג רכב</label>
               <select
                 value={kind}
-                onChange={(e) => setKind(e.target.value)}
+                onChange={handleKindChange}
                 className="p-2 border rounded w-full text-right"
               >
                 <option className=" text-right" value="">בחר סוג רכב</option>
@@ -39,6 +50,10 @@ const Filter = ({ onFilter }) => {
                 <option className=" text-right"  value="משפחתי">משפחתי</option>
                 <option className=" text-right" value="קרוסאובר">קרוסאובר</option>
                 <option className=" text-right" value="7 מקומות">7 מקומות</option>
+
+                <option className=" text-right" value="חשמלי">חשמלי</option>
+                <option className=" text-right" value="היברידי">היברידי</option>
+
               </select>
             </div>
             <div className="col-span-1 md:col-span-1">
