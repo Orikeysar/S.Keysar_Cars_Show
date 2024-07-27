@@ -16,8 +16,17 @@ const Filter = ({ onFilter }) => {
   const handleKindChange = (e) => {
     const value = e.target.value;
     setKind(value);
-    setIsElectric(value === 'חשמלי');
-    setIsHybrid(value === 'היברידי');
+
+    // Reset the electric and hybrid states
+    setIsElectric(false);
+    setIsHybrid(false);
+
+    // Set the electric or hybrid state if applicable
+    if (value === 'חשמלי') {
+      setIsElectric(true);
+    } else if (value === 'היברידי') {
+      setIsHybrid(true);
+    }
   };
   return (
     <div className="p-4">
