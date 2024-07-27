@@ -1,20 +1,20 @@
 {
   "short_name": "S.Keysar",
-  "name": "See All My Cars In One Place",
+  "name": "See All S.Keysar Cars",
   "icons": [
     {
-      "src": "/src/Data/logo",
+      "src": "/src/Data/logo/logo_S.keysar.jpg",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "/src/Data/logo",
-      "type": "image/png",
+      "src": "/src/Data/logo/logo_S.keysar.jpg",
+      "type": "image/jpg",
       "sizes": "192x192"
     },
     {
-      "src": "/src/Data/logo",
-      "type": "image/png",
+      "src": "/src/Data/logo/logo_S.keysar.jpg",
+      "type": "image/jpg",
       "sizes": "512x512"
     }
   ],
