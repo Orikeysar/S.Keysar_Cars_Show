@@ -9,10 +9,11 @@ const Filter = ({ onFilter }) => {
   const [showFilter, setShowFilter] = useState(false);
   const [isElectric, setIsElectric] = useState(false);
   const [isHybrid, setIsHybrid] = useState(false);
+
   const handleFilter = () => {
-    onFilter({ kind, maxPrice, maxKilometer, maxYear,isElectric,isHybrid });
-  }
-  //בודק אם סונן לפי חשמלי או היברידי
+    onFilter({ kind, maxPrice, maxKilometer, maxYear, isElectric, isHybrid });
+  };
+
   const handleKindChange = (e) => {
     const value = e.target.value;
     setKind(value);
@@ -28,41 +29,43 @@ const Filter = ({ onFilter }) => {
       setIsHybrid(true);
     }
   };
+
   return (
+
     <div className="p-4">
+      <div className='flex justify-end'>
       <button
         onClick={() => setShowFilter(!showFilter)}
-        className=" flex items-center justify-center p-2 bg-blue-500 text-white rounded-full shadow-lg z-0"
+        className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full shadow-lg z-0"
       >
         <FaFilter className="mr-2" />
         סינון
       </button>
+      </div>
       {showFilter && (
-        <div className="mt-4">
+        <div className="mt-4 text-right">
           <div>
-            <p className="text-2xl underline mb-4 text-center">סינון רכבים </p>
+            <p className="text-2xl underline mb-4 text-center">סינון רכבים</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-            <div className="col-span-1 md:col-span-1">
-              <label className="block text-right">:סוג רכב</label>
+          <div className="flex flex-wrap gap-4 mb-4 justify-end s:w-full">
+            <div className="flex flex-col items-end s:w-full">
+              <label className="block">:סוג רכב</label>
               <select
                 value={kind}
                 onChange={handleKindChange}
-                className="p-2 border rounded w-full text-right"
+                className="p-2 border rounded  text-right s:w-full"
               >
-                <option className=" text-right" value="">בחר סוג רכב</option>
-                <option className=" text-right" value="מיני">מיני</option>
-                <option className=" text-right"  value="משפחתי">משפחתי</option>
-                <option className=" text-right" value="קרוסאובר">קרוסאובר</option>
-                <option className=" text-right" value="7 מקומות">7 מקומות</option>
-
-                <option className=" text-right" value="חשמלי">חשמלי</option>
-                <option className=" text-right" value="היברידי">היברידי</option>
-
+                <option className="text-right" value="">בחר סוג רכב</option>
+                <option className="text-right" value="מיני">מיני</option>
+                <option className="text-right" value="משפחתי">משפחתי</option>
+                <option className="text-right" value="קרוסאובר">קרוסאובר</option>
+                <option className="text-right" value="7 מקומות">7 מקומות</option>
+                <option className="text-right" value="חשמלי">חשמלי</option>
+                <option className="text-right" value="היברידי">היברידי</option>
               </select>
             </div>
-            <div className="col-span-1 md:col-span-1">
-              <label className="block text-right">עד מחיר: </label>
+            <div className="flex flex-col items-end s:w-full">
+              <label className="block">:עד מחיר</label>
               <input
                 type="number"
                 value={maxPrice}
@@ -70,8 +73,8 @@ const Filter = ({ onFilter }) => {
                 className="p-2 border rounded w-full"
               />
             </div>
-            <div className="col-span-1 md:col-span-1">
-              <label className="block text-right">קילומטר מקסימלי</label>
+            <div className="flex flex-col items-end  s:w-full ">
+              <label className="block">:עד קילומטר</label>
               <input
                 type="number"
                 value={maxKilometer}
@@ -80,8 +83,8 @@ const Filter = ({ onFilter }) => {
               />
             </div>
             {/* חיפןש לפי שנה מקסימלית */}
-            {/* <div className="col-span-1 md:col-span-1">
-              <label className="block text-right">שנה מקסימלית</label>
+            {/* <div className="flex flex-col items-end">
+              <label className="block">שנה מקסימלית:</label>
               <input
                 type="number"
                 value={maxYear}
@@ -90,8 +93,8 @@ const Filter = ({ onFilter }) => {
               />
             </div> */}
           </div>
-          <div className="col-span-1 md:col-span-1 flex items-center">
-            <button onClick={handleFilter} className="p-2 bg-blue-500 text-white rounded w-full">
+          <div className="flex justify-end">
+            <button onClick={handleFilter} className="p-2 bg-blue-500 text-white rounded">
               סנן
             </button>
           </div>

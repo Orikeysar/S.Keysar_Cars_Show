@@ -46,7 +46,7 @@ function AdminAddCars() {
     }
   };
 
-  const handleFilter = ({ kind, maxPrice, maxKilometer, maxYear }) => {
+  const handleFilter = ({ kind, maxPrice, maxKilometer, maxYear,isElectric,isHybrid }) => {
     let filtered = cars;
 
     if (kind) {

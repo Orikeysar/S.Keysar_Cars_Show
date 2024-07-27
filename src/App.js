@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getCars } from './services/carService';
@@ -30,7 +29,7 @@ const App = () => {
   const handleFilter = (filterCriteria) => {
     let filtered = cars;
 
-    if (filterCriteria.kind) {
+    if (filterCriteria.kind && filterCriteria.kind !== 'חשמלי' && filterCriteria.kind !== 'היברידי') {
       filtered = filtered.filter(car => car.kind === filterCriteria.kind);
     }
     if (filterCriteria.maxPrice) {
@@ -42,7 +41,12 @@ const App = () => {
     if (filterCriteria.maxYear) {
       filtered = filtered.filter(car => car.year <= filterCriteria.maxYear);
     }
-
+    if (filterCriteria.isElectric) {
+      filtered = filtered.filter(car => car.isElectric);
+    }
+    if (filterCriteria.isHybrid) {
+      filtered = filtered.filter(car => car.isHybrid);
+    }
     setFilteredCars(filtered);
   };
 
