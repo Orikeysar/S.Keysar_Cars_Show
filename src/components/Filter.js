@@ -15,13 +15,9 @@ const Filter = ({ onFilter }) => {
   //בודק אם סונן לפי חשמלי או היברידי
   const handleKindChange = (e) => {
     const value = e.target.value;
-    if(value === 'חשמלי'){
-      setIsElectric(true)
-    }else if(value === 'היברידי'){
-      setIsHybrid(true)
-    }else{
-      setKind(value);
-    } 
+    setKind(value);
+    setIsElectric(value === 'חשמלי');
+    setIsHybrid(value === 'היברידי');
   };
   return (
     <div className="p-4">
