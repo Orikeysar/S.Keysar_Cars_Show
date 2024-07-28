@@ -1,12 +1,12 @@
 // src/components/AddCarForm.js
-import React, { useState } from "react";
+import React, { useState,useEffect  } from "react";
 import { db, storage } from "../firebase.config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp,updateDoc,doc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import Spinner from "./Spinner";
 
-const AddCarForm = ({ onAdd }) => {
+const AddCarForm = ({ onAdd  ,selectedCar  }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     make: "",
@@ -26,6 +26,14 @@ const AddCarForm = ({ onAdd }) => {
     isHybrid: false,
   });
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (selectedCar) {
+      setFormData(selectedCar);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of the page
+    }
+  }, [selectedCar]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +74,51 @@ const AddCarForm = ({ onAdd }) => {
       setLoading(false);
       return;
     }
+    if (selectedCar) {
 
+      const carData = {
+        make,
+        model,
+        EngineCapacity:Number(formData.EngineCapacity) ,
+        Gear,
+        Ownershep,
+        EngineKind,
+        price: Number(formData.price),
+        kilometer: Number(formData.kilometer),
+        year: Number(formData.year),
+        description,
+        hand,
+        kind,
+        isElectric,
+        isHybrid,
+        timestamp: serverTimestamp(),
+      };
+
+      await updateDoc(doc(db, "cars", selectedCar.id), formData);
+
+      setFormData({
+        make: "",
+        model: "",
+        EngineCapacity: "",
+        Gear: "",
+        Ownershep: "",
+        EngineKind: "",
+        year: "",
+        price: "",
+        kilometer: "",
+        description: "",
+        hand: "",
+        kind: "",
+        images: [],
+        isElectric: false,
+        isHybrid: false,
+      });
+      setError("");
+      setLoading(false);
+      window.location.reload();
+
+
+    }
     try {
       const uploadedImages = await Promise.all(
         images.map((image) => handleImageUpload(image))
@@ -349,7 +401,7 @@ const AddCarForm = ({ onAdd }) => {
         type="submit"
         className="p-2 bg-blue-500 text-white rounded w-full"
       >
-        Add Car
+       {selectedCar ? "עדכן רכב" : "הוסף רכב"}
       </button>
     </form>
   );

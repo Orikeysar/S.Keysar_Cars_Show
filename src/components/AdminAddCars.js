@@ -10,9 +10,10 @@ function AdminAddCars() {
   const [cars, setCars] = useState([]);
   const [filteredCars, setFilteredCars] = useState([]);
   const navigate = useNavigate();
-
+  const [selectedCar, setSelectedCar] = useState(null);
   useEffect(() => {
     fetchCars();
+    
   }, []);
 
   const fetchCars = async () => {
@@ -72,7 +73,9 @@ function AdminAddCars() {
     localStorage.removeItem('isAuthenticated');
     navigate('/login');
   };
-
+  const handleEditCar = (car) => {
+    setSelectedCar(car);
+  };
   return (
     <Layout>
       <div className="text-center">
@@ -80,11 +83,11 @@ function AdminAddCars() {
         <button onClick={handleLogout} className="p-2 bg-red-500 text-white rounded mb-4">
           Logout
         </button>
-        <AddCarForm onAdd={handleAddCar} />
+        <AddCarForm onAdd={handleAddCar} selectedCar={selectedCar} />
         <Filter onFilter={handleFilter} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           {Array.isArray(filteredCars) && filteredCars.map((car) => (
-            <CarItem key={car.id} car={car} handleDeleteCar={handleDeleteCar} />
+            <CarItem key={car.id} car={car} handleDeleteCar={handleDeleteCar}  handleEditCar={handleEditCar}/>
           ))}
         </div>
       </div>

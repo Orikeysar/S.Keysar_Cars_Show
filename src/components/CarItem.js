@@ -9,10 +9,11 @@ import {
   FaHandPaper,
   FaChevronDown,
   FaChevronUp,
+  FaEdit
 } from "react-icons/fa";
 import { Collapse, Button } from "react-bootstrap";
 
-const CarItem = ({ car, handleDeleteCar }) => {
+const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState("");
   const location = useLocation();
@@ -143,10 +144,16 @@ const CarItem = ({ car, handleDeleteCar }) => {
         {location.pathname === "/AdminAddCars" && (
           <div className="text-center">
             <button
-              onClick={() => handleDeleteCar(car.id)}
+              onClick={() =>{if(window.confirm("האם אתה בטוח שברצונך למחוק את הרכב?")===true){handleDeleteCar(car)} }}
               className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
             >
               מחק רכב
+            </button>
+            <button
+              onClick={() =>{if(window.confirm("האם אתה בטוח שברצונך לערוך את הרכב?")===true){handleEditCar(car)} }}
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 "
+            >
+               ערוך רכב
             </button>
           </div>
         )}
