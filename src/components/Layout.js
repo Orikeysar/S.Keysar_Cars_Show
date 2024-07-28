@@ -3,7 +3,7 @@ import { FaPhone, FaWhatsapp } from 'react-icons/fa';
 import Logo from '../Data/logo/logo_S.keysar.jpg';
 
 const Layout = ({ children }) => {
-  const phoneNumber = '0527416677';
+  const phoneNumber = '0522682424';
   const whatsappNumber = `https://wa.me/${phoneNumber}`;
 
   return (
