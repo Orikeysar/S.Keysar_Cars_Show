@@ -8,8 +8,8 @@
       "type": "image/x-icon"
     },
     {
-      "src": "/src/Data/logo/logo_S.keysar.jpg",
-      "type": "image/jpg",
+      "src": "./logo_S.keysar.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
