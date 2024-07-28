@@ -60,8 +60,8 @@ const CarItem = ({ car, handleDeleteCar }) => {
         </div>
       )}
       <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-bold text-gray-800">
+        <div className="flex justify-end   mb-2">
+          <h3 className="text-xl font-bold text-gray-800 ">
             {car.make} {car.model}
           </h3>
         </div>
@@ -83,13 +83,13 @@ const CarItem = ({ car, handleDeleteCar }) => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="flex justify-end">
           <Button
             onClick={() => setOpen(!open)}
             aria-controls="collapse-text"
             aria-expanded={open}
             variant="link"
-            className="text-gray-600 flex items-center"
+            className="text-gray-600 flex items-end justify-end text-end"
           >
             <span>
               {open ? (
