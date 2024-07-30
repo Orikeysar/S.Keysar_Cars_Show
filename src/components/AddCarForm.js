@@ -94,7 +94,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         timestamp: serverTimestamp(),
       };
 
-      await updateDoc(doc(db, "cars", selectedCar.id), formData);
+      await updateDoc(doc(db, "cars", selectedCar.id), carData);
 
       setFormData({
         make: "",

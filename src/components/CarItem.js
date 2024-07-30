@@ -144,7 +144,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
         {location.pathname === "/AdminAddCars" && (
           <div className="text-center">
             <button
-              onClick={() =>{if(window.confirm("האם אתה בטוח שברצונך למחוק את הרכב?")===true){handleDeleteCar(car)} }}
+              onClick={() =>{if(window.confirm("האם אתה בטוח שברצונך למחוק את הרכב?")===true){handleDeleteCar(car.id)} }}
               className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
             >
               מחק רכב
