@@ -303,7 +303,8 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
             <option value="">בחר סוג מנוע</option>
             <option value="בנזין">בנזין</option>
             <option value="דיזל">דיזל</option>
-         
+            <option value="חשמלי">חשמלי</option>
+
           </select>
         </div>
 
