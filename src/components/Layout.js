@@ -8,12 +8,12 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-gray-800 text-white p-1 m-0 flex items-end">
-        <div className="w-2/3 flex flex-col justify-end items-end">
-          <h1 className="text-2xl w-full text-center">S.Keysar</h1>
-          <h1 className="text-2xl w-full text-end">קניה בטוחה לרכב שלך</h1>
+      <header className="bg-gray-800 text-white p-0 m-0 flex justify-center items-center md:items-end">
+        <div className="w-3/4 flex flex-col justify-center items-center">
+          <h1 className="text-xl w-full text-end">ש.קיסר</h1>
+          <h1 className="text-xl w-full text-end">קניה בטוחה לרכב שלך</h1>
         </div>
-        <div className="w-1/3 flex justify-end">
+        <div className="w-1/4 flex justify-end">
           <img src={Logo} alt="S.Keysar Logo" className="h-14" />
         </div>
       </header>

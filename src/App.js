@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 import { getCars } from './services/carService';
 import Filter from './components/Filter';
 import Layout from './components/Layout';
 import CarItem from './components/CarItem';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [cars, setCars] = useState([]);
   const [filteredCars, setFilteredCars] = useState([]);
