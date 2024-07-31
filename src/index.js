@@ -39,7 +39,7 @@ const RootComponent = () => {
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/adminaddcars" element={<RequireAuth><AdminAddCars /></RequireAuth>} />
+        <Route path="/AdminAddCars" element={<RequireAuth><AdminAddCars /></RequireAuth>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
