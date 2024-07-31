@@ -3,17 +3,17 @@
   "name": "See All S.Keysar Cars",
   "icons": [
     {
-      "src": "/src/Data/logo/logo_S.keysar_ico32.ico",
+      "src": "./logo.jpg",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "./logo_S.keysar.png",
+      "src": "./logo.jpg",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/src/Data/logo/logo_S.keysar.jpg",
+      "src": "./logo.jpg",
       "type": "image/jpg",
       "sizes": "512x512"
     }

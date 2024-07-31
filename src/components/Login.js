@@ -17,7 +17,7 @@ const Login = ({ setIsAuthenticated }) => {
       navigate('/AdminAddCars');
     } catch (error) {
       console.error(error);
-      alert('Login failed: ' + error.message);
+      alert(' ההתחברות נכשלה: ' + error.message);
     }
   };
 

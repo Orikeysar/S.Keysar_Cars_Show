@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaPhone, FaWhatsapp } from 'react-icons/fa';
-import Logo from '../Data/logo/logo_S.keysar.jpg';
+import Logo from '../Data/long_logo.png';
 
 const Layout = ({ children }) => {
   const phoneNumber = '0522682424';
@@ -8,13 +8,18 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-gray-800 text-white p-0 m-0 flex justify-center items-center md:items-end">
-        <div className="w-3/4 flex flex-col justify-center items-center">
-          <h1 className="text-xl w-full text-end">ש.קיסר</h1>
-          <h1 className="text-xl w-full text-end">קניה בטוחה לרכב שלך</h1>
+      {/* <header className="bg-gray-800 text-white p-1 m-0 flex justify-center items-center md:items-end">
+        <div className="w-3/4 flex flex-col justify-center items-center mr-2">
+          <h1 className="text-lg w-full text-end sm:text-sm">ש.קיסר</h1>
+          <h1 className="text-base w-full text-end sm:text-sm">קניה בטוחה לרכב שלך</h1>
         </div>
-        <div className="w-1/4 flex justify-end">
-          <img src={Logo} alt="S.Keysar Logo" className="h-14" />
+        <div className="w-1/4 flex justify-end place-items-baseline ">
+          <img src={Logo} alt="S.Keysar Logo" className="max-h-full" />
+        </div>
+      </header> */}
+      <header className="bg-gray-800 text-white p-1 m-0 flex justify-center  items-center  ">
+        <div className=" flex justify-end place-items-baseline ">
+          <img src={Logo} alt="S.Keysar Logo" className="max-h-44 " />
         </div>
       </header>
       <main className="flex-grow container mx-auto p-4 mb-14">{children}</main>
