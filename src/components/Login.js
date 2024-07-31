@@ -14,7 +14,7 @@ const Login = ({ setIsAuthenticated }) => {
       await setPersistence(auth, browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
       setIsAuthenticated(true);
-      navigate('/adminaddcars');
+      navigate('/AdminAddCars');
     } catch (error) {
       console.error(error);
       alert('Login failed: ' + error.message);
