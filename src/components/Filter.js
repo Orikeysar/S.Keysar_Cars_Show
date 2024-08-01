@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaFilter } from 'react-icons/fa';
 
 const Filter = ({ onFilter }) => {
@@ -10,9 +10,9 @@ const Filter = ({ onFilter }) => {
   const [isElectric, setIsElectric] = useState(false);
   const [isHybrid, setIsHybrid] = useState(false);
 
-  const handleFilter = () => {
+  useEffect(() => {
     onFilter({ kind, maxPrice, maxKilometer, maxYear, isElectric, isHybrid });
-  };
+  }, [kind, maxPrice, maxKilometer, maxYear, isElectric, isHybrid, onFilter]);
 
   const handleKindChange = (e) => {
     const value = e.target.value;
@@ -31,16 +31,15 @@ const Filter = ({ onFilter }) => {
   };
 
   return (
-
     <div className="p-4">
-      <div className='flex justify-end'>
-      <button
-        onClick={() => setShowFilter(!showFilter)}
-        className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full shadow-lg z-0"
-      >
-        <FaFilter className="mr-2" />
-        סינון
-      </button>
+      <div className="flex justify-end">
+        <button
+          onClick={() => setShowFilter(!showFilter)}
+          className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full shadow-lg z-0"
+        >
+          <FaFilter className="mr-2" />
+          סינון
+        </button>
       </div>
       {showFilter && (
         <div className="mt-4 text-right">
@@ -53,7 +52,7 @@ const Filter = ({ onFilter }) => {
               <select
                 value={kind}
                 onChange={handleKindChange}
-                className="p-2 border rounded  text-right s:w-full"
+                className="p-2 border rounded text-right s:w-full"
               >
                 <option className="text-right" value="">בחר סוג רכב</option>
                 <option className="text-right" value="מיני">מיני</option>
@@ -73,7 +72,7 @@ const Filter = ({ onFilter }) => {
                 className="p-2 border rounded w-full"
               />
             </div>
-            <div className="flex flex-col items-end  s:w-full ">
+            <div className="flex flex-col items-end s:w-full">
               <label className="block">:עד קילומטר</label>
               <input
                 type="number"
@@ -92,11 +91,6 @@ const Filter = ({ onFilter }) => {
                 className="p-2 border rounded w-full"
               />
             </div> */}
-          </div>
-          <div className="flex justify-end">
-            <button onClick={handleFilter} className="p-2 bg-blue-500 text-white rounded">
-              סנן
-            </button>
           </div>
         </div>
       )}

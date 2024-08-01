@@ -9,7 +9,8 @@ import {
   FaHandPaper,
   FaChevronDown,
   FaChevronUp,
-  FaEdit
+  FaEdit,
+  FaTrash,
 } from "react-icons/fa";
 import { Collapse, Button } from "react-bootstrap";
 
@@ -19,6 +20,11 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
   const location = useLocation();
   //פתיחת פרטים נוספים.
   const [open, setOpen] = useState(false);
+
+ // Calculate if the car was added within the last week
+ const currentDate = new Date();
+ const  carDate = car.timestamp.toDate();
+  const isNew = (currentDate - carDate) / (1000 * 60 * 60 * 24) <= 7;
 
 
   const handleImageClick = (image) => {
@@ -51,13 +57,18 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
     >
       <Carousel>{carouselItems}</Carousel>
       {car.isElectric && (
-        <div className="absolute top-0 right-0 bg-green-500 opacity-65 text-white px-3 py-2 text-s font-bold ">
+        <div className="absolute top-0 right-0 bg-green-500 opacity-70 text-white px-3 py-2 text-s font-bold ">
           רכב חשמלי
         </div>
       )}
       {car.isHybrid && (
-        <div className="absolute top-0 right-0 bg-green-500 opacity-65 text-white px-3 py-2 text-s font-bold ">
+        <div className="absolute top-0 right-0 bg-green-500 opacity-70 text-white px-3 py-2 text-s font-bold ">
           רכב היברידי
+        </div>
+      )}
+       {isNew && (
+        <div className="absolute top-0 left-0 bg-red-500 opacity-70 text-white px-3 py-2 text-s font-bold">
+          חדש באתר
         </div>
       )}
       <div className="p-4">
@@ -65,6 +76,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
           <h3 className="text-xl font-bold text-gray-800 ">
             {car.make} {car.model}
           </h3>
+         
         </div>
         <div className="text-gray-600 mb-4 mt-4 bg-gray-50 rounded-full border p-2  ">
           <div className="flex items-center justify-between mb-1">
@@ -140,7 +152,8 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
         </div>
         <div className="text-red-500 text-2xl font-semibold text-center underline blink">
           ₪{car.price.toLocaleString()}
-        </div>{" "}
+        </div>
+        <p className="flex left-0 text-gray-400 mb-0  ">ט.ל.ח</p>
         {location.pathname === "/AdminAddCars" && (
           <div className="text-center">
             <button
