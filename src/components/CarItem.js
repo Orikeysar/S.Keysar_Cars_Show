@@ -117,7 +117,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
             <div id="collapse-text" className="mb-4">
               {/* כאן תוסיף את פרטי המכונית הנוספים */}
               <div className="flex items-center justify-end mb-1">
-                בעלות נוחכית:  {car.Ownershep}
+                בעלות נוכחית:  {car.Ownershep}
               </div>
               <div className="flex items-center justify-end mb-1">
                נפח מנוע:  {car.EngineCapacity}
