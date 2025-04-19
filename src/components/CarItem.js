@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,} from "react";
 import Carousel from "react-bootstrap/Carousel";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import bootstrap CSS
@@ -20,7 +20,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
   const location = useLocation();
   //פתיחת פרטים נוספים.
   const [open, setOpen] = useState(false);
-
+ 
  // Calculate if the car was added within the last week
  const currentDate = new Date();
  const  carDate = car.timestamp.toDate();
@@ -150,9 +150,11 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
         <div className="border rounded-md p-2 mb-4">
           <p className="text-gray-700 text-base">{car.description}</p>
         </div>
+        {location.pathname !== '/np' && (
         <div className="text-red-500 text-2xl font-semibold text-center underline blink">
           ₪{car.price.toLocaleString()}
         </div>
+      )}
         <p className="flex left-0 text-gray-400 mb-0  ">ט.ל.ח</p>
         {location.pathname === "/AdminAddCars" && (
           <div className="text-center">
