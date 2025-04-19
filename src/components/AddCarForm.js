@@ -141,6 +141,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         isHybrid,
         carImages: uploadedImages,
         timestamp: serverTimestamp(),
+        fullprice: Number(formData.fullprice)
       };
 
       await addDoc(collection(db, "cars"), carData);
@@ -160,6 +161,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         images: [],
         isElectric: false,
         isHybrid: false,
+        fullprice:"",
       });
       setError("");
       setLoading(false);
@@ -308,7 +310,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
           </select>
         </div>
 
-        <div>
+        <div>fullprice
           <label className="block text-center">מחיר</label>
           <input
             type="number"
@@ -324,6 +326,16 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
             type="number"
             id="kilometer"
             value={formData.kilometer}
+            onChange={handleChange}
+            className="p-2 border rounded w-full text-center"
+          />
+        </div>
+        <div>
+          <label className="block text-center">מחיר</label>
+          <input
+            type="number"
+            id="fullprice"
+            value={formData.fullprice}
             onChange={handleChange}
             className="p-2 border rounded w-full text-center"
           />

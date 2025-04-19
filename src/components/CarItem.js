@@ -11,7 +11,11 @@ import {
   FaChevronUp,
   FaEdit,
   FaTrash,
+  FaGasPump,
+  FaCogs,
+  
 } from "react-icons/fa";
+import { IoMdSpeedometer } from "react-icons/io";
 import { Collapse, Button } from "react-bootstrap";
 
 const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
@@ -49,13 +53,46 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
       );
     });
   }
+  //חישוב המחיר של החל מ____
+  const calculateMonthlyPayment = (price) => {
+    const loanAmount = Number(price);
+    const interestRate = 0.14 / 12; // 7% שנתי, חלקי 12 חודשים
+    const totalMonths = 60;
+  
+    const monthlyPayment =
+      (loanAmount * interestRate) /
+      (1 - Math.pow(1 + interestRate, -totalMonths));
+  
+    return Math.round(monthlyPayment).toLocaleString();
+  };
 
   return (
     <div
       key={car._id}
-      className="max-w-sm rounded overflow-hidden shadow-lg bg-white relative border border-gray-300 text-right"
+      className="max-w-sm rounded-2xl overflow-hidden shadow-lg bg-white relative border border-gray-300 text-right"
     >
       <Carousel>{carouselItems}</Carousel>
+      <div className="relative">
+
+
+  {/* אייקונים שיופיעו על התמונה */}
+  <div className="absolute bottom-1 left-0 right-0 rounded-full bg-slate-200 bg-opacity-50 text-black flex justify-around text-s py-1 z-10">
+    <div className="flex items-center gap-1">
+      <span>{car.EngineKind}</span>
+      <FaGasPump/>
+    </div>
+    <div className="flex items-center gap-1">
+      <span>{car.Gear}</span>
+      <FaCogs/>
+    </div>
+    <div className="flex items-center gap-1">
+      <span>{car.EngineCapacity} סמ״ק</span>
+      <IoMdSpeedometer />
+    </div>
+  </div>
+</div>
+
+
       {car.isElectric && (
         <div className="absolute top-0 right-0 bg-green-500 opacity-70 text-white px-3 py-2 text-s font-bold ">
           רכב חשמלי
@@ -96,42 +133,38 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
             </div>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            onClick={() => setOpen(!open)}
-            aria-controls="collapse-text"
-            aria-expanded={open}
-            variant="link"
-            className="text-gray-600 flex items-end justify-end text-end"
-          >
-            <span>
-              {open ? (
-                <FaChevronUp className="ml-1 " />
-              ) : (
-                <FaChevronDown className="ml-1" />
-              )}
-            </span>
-            פרטים נוספים
-          </Button>
-          <Collapse in={open}>
-            <div id="collapse-text" className="mb-4">
-              {/* כאן תוסיף את פרטי המכונית הנוספים */}
-              <div className="flex items-center justify-end mb-1">
-                בעלות נוכחית:  {car.Ownershep}
-              </div>
-              <div className="flex items-center justify-end mb-1">
-               נפח מנוע:  {car.EngineCapacity}
-              </div>
-              <div className="flex items-center justify-end mb-1">
-                סוג מנוע:  {car.EngineKind}
-              </div>
-              <div className="flex items-center justify-end mb-1 ">
-                גיר:  {car.Gear}
-              </div>
-              <div className="flex items-center justify-end mb-1">
-                {" "}
-                סוג:  {car.kind}
-              </div>
+        <div className="flex justify-end w-full ">
+        <div className="flex justify-end w-full  ">
+  <button
+    onClick={() => setOpen(!open)}
+    aria-controls="collapse-text"
+    aria-expanded={open}
+    className="bg-gray-200 text-gray-700 py-2 px-4 rounded text-center font-semibold flex items-center gap-2 shadow-sm justify-center w-full mb-4 mt-4"
+  >
+    {open ? <FaChevronUp /> : <FaChevronDown />}
+    פרטים נוספים
+  </button>
+</div>
+<Collapse in={open}>
+  <div  dir="rtl" id="collapse-text" className="mb-4 mt-4 border border-gray-500 rounded-lg p-4 bg-gray-50 text-right pt-4 w-full  ">
+    <div   className=" items-center justify-start mb-1 ">
+      <span className="flex font-semibold text-gray-800 ">בעלות נוכחית:</span>&nbsp;{car.Ownershep}
+    </div>
+    <div className="flex items-center justify-start mb-1">
+      <span className="font-semibold text-gray-800 ">נפח מנוע:</span>&nbsp;{car.EngineCapacity}
+    </div>
+    <div className="flex items-center justify-start mb-1">
+      <span className="font-semibold text-gray-800 ">סוג מנוע:</span>&nbsp;{car.EngineKind}
+    </div>
+    <div className="flex items-center justify-start mb-1 ">
+      <span className="font-semibold text-gray-800">גיר:</span>&nbsp;{car.Gear}
+    </div>
+    <div className="flex items-center justify-start mb-1 ">
+      <span className="font-semibold text-gray-800">סוג:</span>&nbsp;{car.kind}
+    </div>
+ 
+
+
               {car.isElectric && (
                 <div className="flex items-center justify-center mb-1 rounded font-bold text-white bg-green-400">
                   רכב זה חשמלי{" "}
@@ -151,11 +184,23 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
           <p className="text-gray-700 text-base">{car.description}</p>
         </div>
         {location.pathname !== '/np' && (
-        <div className="text-red-500 text-2xl font-semibold text-center underline blink">
-          ₪{car.price.toLocaleString()}
-        </div>
+      <div className="text-red-500 text-2xl font-semibold text-center underline blink">
+      ₪{car.price.toLocaleString()}
+    </div>
       )}
-        <p className="flex left-0 text-gray-400 mb-0  ">ט.ל.ח</p>
+      {location.pathname === '/np' && (
+          <div >
+            <div className="flex text-left left-0 justify-end">
+           <p className="text-red-500 text-2xl font-semibold text-center underline blink m-2">₪{car.fullprice} </p>  
+           <p className="text-black text-xl m-2">:מחיר מחירון </p>
+           </div>
+            <div className="text-sm text-gray-700 mt-1 text-left">
+              החל מ-₪{calculateMonthlyPayment(car.fullprice)} לחודש
+            </div>
+          </div>
+        
+      )}
+        <p className=" text-right text-gray-400 mb-0  ">ט.ל.ח</p>
         {location.pathname === "/AdminAddCars" && (
           <div className="text-center">
             <button
