@@ -22,6 +22,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
     hand: "",
     kind: "",
     images: [],
+    fullprice:"",
     isElectric: false,
     isHybrid: false,
   });
@@ -54,6 +55,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
       Gear,
       Ownershep,
       EngineKind,
+      fullprice,
     } = formData;
 
     if (
@@ -85,6 +87,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         EngineKind,
         price: Number(formData.price),
         kilometer: Number(formData.kilometer),
+        fullprice:Number(formData.fullprice),
         year: Number(formData.year),
         description,
         hand,
@@ -112,6 +115,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         images: [],
         isElectric: false,
         isHybrid: false,
+        fullprice:"",
       });
       setError("");
       setLoading(false);
@@ -310,8 +314,8 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
           </select>
         </div>
 
-        <div>fullprice
-          <label className="block text-center">מחיר</label>
+        <div>
+          <label className="block text-center">מחיר מכירה</label>
           <input
             type="number"
             id="price"
@@ -331,7 +335,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
           />
         </div>
         <div>
-          <label className="block text-center">מחיר</label>
+          <label className="block text-center">מחיר מחירון</label>
           <input
             type="number"
             id="fullprice"
