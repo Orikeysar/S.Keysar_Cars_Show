@@ -71,12 +71,14 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
       key={car._id}
       className="max-w-sm rounded-2xl overflow-hidden shadow-lg bg-white relative border border-gray-300 text-right"
     >
-      <Carousel>{carouselItems}</Carousel>
+     <Carousel indicators={false}>
+  {carouselItems}
+</Carousel>
       <div className="relative">
 
 
   {/* אייקונים שיופיעו על התמונה */}
-  <div className="absolute bottom-1 left-0 right-0 rounded-full bg-slate-200 bg-opacity-50 text-black flex justify-around text-s py-1 z-10">
+  <div className="absolute bottom-2 left-0 right-0 rounded-full bg-slate-200 bg-opacity-40 text-black flex justify-around text-lg py-1 z-10">
     <div className="flex items-center gap-1">
       <span>{car.EngineKind}</span>
       <FaGasPump/>
@@ -115,7 +117,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
           </h3>
          
         </div>
-        <div className="text-gray-600 mb-4 mt-4 bg-gray-50 rounded-full border p-2  ">
+        <div className="text-lg  bg-gray-60 rounded-full border p-3   ">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center">
               <span> {car.kilometer.toLocaleString()}</span>
@@ -189,15 +191,22 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
     </div>
       )}
       {location.pathname === '/np' && (
-          <div >
-            <div className="flex text-left left-0 justify-end">
-           <p className="text-red-500 text-2xl font-semibold text-center underline blink m-2">₪{car.fullprice} </p>  
-           <p className="text-black text-xl m-2">:מחיר מחירון </p>
-           </div>
-            <div className="text-sm text-gray-700 mt-1 text-left">
-              החל מ-₪{calculateMonthlyPayment(car.fullprice)} לחודש
-            </div>
-          </div>
+         <div>
+         <div className="flex text-left left-0 justify-end">
+           <p className="text-red-500 text-2xl font-semibold text-center m-2">
+             ₪{car.fullprice}
+           </p>
+           <p className="text-black text-xl m-2">:מחיר מחירון</p>
+         </div>
+       
+         {/* הקו האפור הדק */}
+         <hr className="border-t border-gray-700 my-2" />
+       
+         <div className="text-lg text-gray-700 mt-1 text-left blink">
+           החל מ-₪{calculateMonthlyPayment(car.fullprice)} לחודש
+         </div>
+       </div>
+       
         
       )}
         <p className=" text-right text-gray-400 mb-0  ">ט.ל.ח</p>

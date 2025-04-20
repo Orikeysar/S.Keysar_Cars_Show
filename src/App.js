@@ -52,7 +52,9 @@ const App = () => {
 
   return (
     <Layout>
-      <Filter onFilter={handleFilter} />
+     <div className="sticky top-20 z-40 bg-white  ">
+  <Filter onFilter={handleFilter} />
+</div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {loading ? (
           <p>Loading...</p>

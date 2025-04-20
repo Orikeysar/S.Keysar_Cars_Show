@@ -17,11 +17,11 @@ const Layout = ({ children }) => {
           <img src={Logo} alt="S.Keysar Logo" className="max-h-full" />
         </div>
       </header> */}
-      <header className="bg-gray-800 text-white p-1 m-0 flex justify-center  items-center  ">
-        <div className=" flex justify-end place-items-baseline ">
-          <img src={Logo} alt="S.Keysar Logo" className="max-h-44 " />
-        </div>
-      </header>
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-300 flex justify-center items-center shadow-sm h-20">
+  <div className="flex justify-end place-items-center overflow-hidden h-full">
+    <img src={Logo} alt="S.Keysar Logo" className="h-full object-cover" />
+  </div>
+</header>
       <main className="flex-grow container mx-auto p-4 mb-14">{children}</main>
       <footer className="bg-gray-800 text-white p-2 fixed bottom-0 w-full">
         <div className="container mx-auto flex justify-between items-center">

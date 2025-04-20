@@ -31,18 +31,18 @@ const Filter = ({ onFilter }) => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-end">
+    <div className="flex row bg-white ">
+      <div className=" mt-2 mb-2 ">
         <button
           onClick={() => setShowFilter(!showFilter)}
-          className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full shadow-lg z-0"
+          className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full shadow-lg w-full "
         >
           <FaFilter className="mr-2" />
           סינון
         </button>
       </div>
       {showFilter && (
-        <div className="mt-4 text-right">
+        <div className="mt-4 text-right border rounded">
           <div>
             <p className="text-2xl underline mb-4 text-center">סינון רכבים</p>
           </div>
