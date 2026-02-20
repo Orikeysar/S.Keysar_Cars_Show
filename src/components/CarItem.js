@@ -18,18 +18,19 @@ import {
 import { IoMdSpeedometer } from "react-icons/io";
 import { Collapse, Button } from "react-bootstrap";
 
-const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
+
+// בתחילת הקובץ - הוסף את carItems כך שהתמונה הראשית תהיה ראשונה
+
+const CarItem = ({ car, handleDeleteCar, handleEditCar }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState("");
+  const [activeImageIndex, setActiveImageIndex] = useState(0); // ← אינדקס התמונה הנוכחית
   const location = useLocation();
-  //פתיחת פרטים נוספים.
   const [open, setOpen] = useState(false);
- 
- // Calculate if the car was added within the last week
- const currentDate = new Date();
- const  carDate = car.timestamp.toDate();
-  const isNew = (currentDate - carDate) / (1000 * 60 * 60 * 24) <= 7;
 
+  const currentDate = new Date();
+  const carDate = car.timestamp.toDate();
+  const isNew = (currentDate - carDate) / (1000 * 60 * 60 * 24) <= 7;
 
   const handleImageClick = (image) => {
     setModalImage(`${image}`);
@@ -38,31 +39,52 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
 
   const handleCloseModal = () => setShowModal(false);
 
-  const carouselItems = [];
+  // ========== סדר התמונות - התמונה הראשית קדימה ==========
+  const orderedImages = [];
   if (car.carImages && Array.isArray(car.carImages)) {
-    car.carImages?.forEach((image, index) => {
-      carouselItems.push(
-        <Carousel.Item key={`${image}-${index}`}>
-          <img
-            src={image}
-            alt={`Slide ${index}`}
-            className="w-full h-64 object-cover cursor-pointer"
-            onClick={() => handleImageClick(image)}
-          />
-        </Carousel.Item>
-      );
+    // קבל אינדקס התמונה הראשית (או 0 אם לא קיים)
+    const primaryIndex = car.primaryImageIndex || 0;
+    
+    // הוסף את התמונה הראשית ראשונה
+    orderedImages.push(car.carImages[primaryIndex]);
+    
+    // הוסף את שאר התמונות
+    car.carImages.forEach((image, index) => {
+      if (index !== primaryIndex) {
+        orderedImages.push(image);
+      }
     });
   }
-  //חישוב המחיר של החל מ____
+
+  const carouselItems = [];
+  orderedImages.forEach((image, index) => {
+    carouselItems.push(
+      <Carousel.Item key={`${image}-${index}`}>
+        <img
+          src={image}
+          alt={`Slide ${index}`}
+          className="w-full h-64 object-cover cursor-pointer"
+          onClick={() => handleImageClick(image)}
+        />
+        {/* תווית "תמונה ראשית" להיוויסותן */}
+        {index === 0 && (
+          <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">
+            📸 
+          </div>
+        )}
+      </Carousel.Item>
+    );
+  });
+
   const calculateMonthlyPayment = (price) => {
     const loanAmount = Number(price);
-    const interestRate = 0.14 / 12; // 7% שנתי, חלקי 12 חודשים
+    const interestRate = 0.14 / 12;
     const totalMonths = 60;
-  
+
     const monthlyPayment =
       (loanAmount * interestRate) /
       (1 - Math.pow(1 + interestRate, -totalMonths));
-  
+
     return Math.round(monthlyPayment).toLocaleString();
   };
 
@@ -71,7 +93,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
       key={car._id}
       className="max-w-sm rounded-2xl overflow-hidden shadow-lg bg-white relative border border-gray-300 text-right"
     >
-     <Carousel indicators={false}>
+     <Carousel indicators={false} interval={null} activeIndex={activeImageIndex} onSelect={(selectedIndex) => setActiveImageIndex(selectedIndex)}>
   {carouselItems}
 </Carousel>
       <div className="relative">
@@ -211,7 +233,7 @@ const CarItem = ({ car, handleDeleteCar,handleEditCar  }) => {
       )}
         <p className=" text-right text-gray-400 mb-0  ">ט.ל.ח</p>
         {location.pathname === "/AdminAddCars" && (
-          <div className="text-center">
+          <div className="flex justify-around px-4">
             <button
               onClick={() =>{if(window.confirm("האם אתה בטוח שברצונך למחוק את הרכב?")===true){handleDeleteCar(car.id)} }}
               className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
