@@ -1,12 +1,12 @@
 // src/components/AddCarForm.js
-import React, { useState,useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { db, storage } from "../firebase.config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { collection, addDoc, serverTimestamp,updateDoc,doc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, updateDoc, doc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import Spinner from "./Spinner";
 
-const AddCarForm = ({ onAdd  ,selectedCar  }) => {
+const AddCarForm = ({ onAdd, selectedCar }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     make: "",
@@ -22,23 +22,92 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
     hand: "",
     kind: "",
     images: [],
-    fullprice:"",
+    fullprice: "",
     isElectric: false,
     isHybrid: false,
+    primaryImageIndex: 0, // ← שדה חדש
   });
+  const [imagePreview, setImagePreview] = useState([]); // תצוגה מקדימה של התמונות
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (selectedCar) {
-      setFormData(selectedCar);
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of the page
+      setFormData({
+        ...selectedCar,
+        primaryImageIndex: selectedCar.primaryImageIndex || 0, // לוודא שיש ערך
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [selectedCar]);
 
+  // פונקציה לעדכון אינדקס התמונה הראשית
+  const handleSetPrimaryImage = (index) => {
+    setFormData({
+      ...formData,
+      primaryImageIndex: index,
+    });
+  };
+
+  // פונקציה לטיפול בבחירת תמונות
+  const handleImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setFormData({
+      ...formData,
+      images: [...formData.images, ...files],
+    });
+
+    // יצירת תצוגה מקדימה
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImagePreview((prev) => [...prev, event.target.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // הסרת תמונה
+  const handleRemoveImage = (index) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    const newPreview = imagePreview.filter((_, i) => i !== index);
+    
+    setFormData({
+      ...formData,
+      images: newImages,
+      // אם הוסרנו את התמונה הראשית, עדכן את primaryImageIndex
+      primaryImageIndex: formData.primaryImageIndex >= newImages.length ? 
+        newImages.length - 1 : formData.primaryImageIndex,
+    });
+    setImagePreview(newPreview);
+  };
+
+  // טעינת תמונה ל-Firebase
+  const handleImageUpload = (image) => {
+    return new Promise((resolve, reject) => {
+      const storageRef = ref(
+        storage,
+        `carimages/${Date.now()}-${image.name || "image"}`
+      );
+      const uploadTask = uploadBytesResumable(storageRef, image);
+
+      uploadTask.on(
+        "state_changed",
+        null,
+        (error) => {
+          console.error("Error uploading image:", error);
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(resolve);
+        }
+      );
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     const {
       make,
       model,
@@ -56,6 +125,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
       Ownershep,
       EngineKind,
       fullprice,
+      primaryImageIndex,
     } = formData;
 
     if (
@@ -76,24 +146,26 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
       setLoading(false);
       return;
     }
-    if (selectedCar) {
 
+    // אם זה עריכה של רכב קיים
+    if (selectedCar) {
       const carData = {
         make,
         model,
-        EngineCapacity:Number(formData.EngineCapacity) ,
+        EngineCapacity: Number(formData.EngineCapacity),
         Gear,
         Ownershep,
         EngineKind,
         price: Number(formData.price),
         kilometer: Number(formData.kilometer),
-        fullprice:Number(formData.fullprice),
+        fullprice: Number(formData.fullprice),
         year: Number(formData.year),
         description,
         hand,
         kind,
         isElectric,
         isHybrid,
+        primaryImageIndex: primaryImageIndex, // ← שמירת אינדקס התמונה הראשית
         timestamp: serverTimestamp(),
       };
 
@@ -115,14 +187,16 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         images: [],
         isElectric: false,
         isHybrid: false,
-        fullprice:"",
+        fullprice: "",
+        primaryImageIndex: 0,
       });
+      setImagePreview([]);
       setError("");
       setLoading(false);
       window.location.reload();
-
-
+      return;
     }
+
     try {
       const uploadedImages = await Promise.all(
         images.map((image) => handleImageUpload(image))
@@ -131,7 +205,7 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
       const carData = {
         make,
         model,
-        EngineCapacity:Number(formData.EngineCapacity) ,
+        EngineCapacity: Number(formData.EngineCapacity),
         Gear,
         Ownershep,
         EngineKind,
@@ -144,11 +218,12 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         isElectric,
         isHybrid,
         carImages: uploadedImages,
+        primaryImageIndex: primaryImageIndex, // ← שמירת אינדקס התמונה הראשית
         timestamp: serverTimestamp(),
-        fullprice: Number(formData.fullprice)
       };
 
       await addDoc(collection(db, "cars"), carData);
+
       setFormData({
         make: "",
         model: "",
@@ -165,262 +240,283 @@ const AddCarForm = ({ onAdd  ,selectedCar  }) => {
         images: [],
         isElectric: false,
         isHybrid: false,
-        fullprice:"",
+        fullprice: "",
+        primaryImageIndex: 0,
       });
+      setImagePreview([]);
       setError("");
       setLoading(false);
-      window.location.reload();
-    } catch (e) {
-      console.error("Error adding document: ", e);
+      if (onAdd) onAdd();
+    } catch (error) {
+      console.error("Error adding car:", error);
+      setError("שגיאה בהוסיף הרכב: " + error.message);
       setLoading(false);
     }
   };
-  //העלאת תמונה  לסטורג
-  const handleImageUpload = (imageFile) => {
-    return new Promise((resolve, reject) => {
-      const storageRef = ref(
-        storage,
-        `carimages/${uuidv4()}-${imageFile.name}`
-      );
-      const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-        },
-        (error) => {
-          reject(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            resolve(downloadURL);
-          });
-        }
-      );
+  const handleInputChange = (e) => {
+    const { name, value, checked, type } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setFormData((prevState) => ({ ...prevState, images: files }));
-  };
-
-  const handleChange = (e) => {
-    const { id, value, checked, type } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [id]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4"
-      encType="multipart/form-data"
-    >
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-center ">שם יצרן</label>
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">הוסף רכב חדש</h1>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* שדות טקסט בסיסיים */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
-            id="make"
+            name="make"
+            placeholder="מותג"
             value={formData.make}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
           />
-        </div>
-        <div>
-          <label className="block text-center">דגם</label>
           <input
             type="text"
-            id="model"
+            name="model"
+            placeholder="דגם"
             value={formData.model}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
           />
-        </div>
-        <div>
-          <label className="block text-center">סוג רכב</label>
-          <select
-            id="kind"
-            value={formData.kind}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          >
-            <option value="">בחר סוג רכב</option>
-            <option value="מיני">מיני</option>
-            <option value="משפחתי">משפחתי</option>
-            <option value="קרוסאובר">קרוסאובר</option>
-            <option value="7 מקומות">7 מקומות</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-center">בעלות נוכחית</label>
-          <select
-            id="Ownershep"
-            value={formData.Ownershep}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          >
-            <option value="">בחר בעלות</option>
-            <option value="פרטית">פרטית</option>
-            <option value="ליסינג">ליסינג</option>
-            <option value="השכרה">השכרה</option>
-            <option value="חברה">חברה</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-center">שנה</label>
           <input
             type="number"
-            id="year"
+            name="year"
+            placeholder="שנה"
             value={formData.year}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
           />
-        </div>
-        <div>
-          <label className="block text-center">נפח מנוע</label>
           <input
             type="number"
-            id="EngineCapacity"
-            value={formData.EngineCapacity}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          />
-        </div>
-        <div>
-          <label className="block text-center">סוג מנוע</label>
-          <select
-            id="EngineKind"
-            value={formData.EngineKind}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          >
-            <option value="">בחר סוג מנוע</option>
-            <option value="בנזין">בנזין</option>
-            <option value="דיזל">דיזל</option>
-            <option value="חשמלי">חשמלי</option>
-
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-center">מחיר מכירה</label>
-          <input
-            type="number"
-            id="price"
+            name="price"
+            placeholder="מחיר"
             value={formData.price}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
           />
-        </div>
-        <div>
-          <label className="block text-center">קילומטר</label>
           <input
             type="number"
-            id="kilometer"
+            name="kilometer"
+            placeholder="קילומטרים"
             value={formData.kilometer}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
           />
-        </div>
-        <div>
-          <label className="block text-center">מחיר מחירון</label>
-          <input
-            type="number"
-            id="fullprice"
-            value={formData.fullprice}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          />
-        </div>
-        <div>
-          <label className="block text-center">יד</label>
-          <input
-            type="number"
-            id="hand"
-            value={formData.hand}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          />
-        </div>
-        <div>
-          <label className="block text-center"> סוג גיר</label>
-          <select
-            id="Gear"
-            value={formData.Gear}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
-          >
-            <option value="">בחר סוג גיר</option>
-            <option value="ידני">ידני</option>
-            <option value="אוטומט">אוטומט</option>
-            <option value="טיפטרוניק">טיפטרוניק</option>
-            <option value="רובוטית/רציפה">רובוטית/רציפה</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-center">תיאור קצר על הרכב</label>
           <input
             type="text"
-            id="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="p-2 border rounded w-full text-center"
+            name="EngineCapacity"
+            placeholder="נפח מנוע"
+            value={formData.EngineCapacity}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
+          />
+          <input
+            type="text"
+            name="Gear"
+            placeholder="תיבת הילוכים"
+            value={formData.Gear}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
+          />
+          <input
+            type="text"
+            name="EngineKind"
+            placeholder="סוג מנוע"
+            value={formData.EngineKind}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
+          />
+          <input
+            type="text"
+            name="hand"
+            placeholder="יד"
+            value={formData.hand}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
+          />
+          <input
+            type="text"
+            name="Ownershep"
+            placeholder="בעלות"
+            value={formData.Ownershep}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
+          />
+          <input
+            type="text"
+            name="kind"
+            placeholder="סוג רכב"
+            value={formData.kind}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
+            required
+          />
+          <input
+            type="number"
+            name="fullprice"
+            placeholder="מחיר מלא"
+            value={formData.fullprice}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded text-right"
           />
         </div>
-        <div>
-          <label className="block text-center">העלה תמונות (עד 5)</label>
+
+        <textarea
+          name="description"
+          placeholder="תיאור הרכב"
+          value={formData.description}
+          onChange={handleInputChange}
+          className="w-full p-2 border rounded text-right"
+          rows="4"
+          required
+        ></textarea>
+
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="isElectric"
+              checked={formData.isElectric}
+              onChange={handleInputChange}
+            />
+            <span>רכב חשמלי</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="isHybrid"
+              checked={formData.isHybrid}
+              onChange={handleInputChange}
+            />
+            <span>רכב היברידי</span>
+          </label>
+        </div>
+
+        {/* ========== קטע העלאת תמונות וסימון התמונה הראשית ========== */}
+        <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+          <h2 className="text-xl font-bold mb-4 text-right">📷 העלאת תמונות</h2>
+
           <input
             type="file"
             multiple
-            id="images"
-            onChange={handleImageChange}
-            className="p-2 border rounded w-full text-center"
             accept="image/*"
+            onChange={handleImageSelect}
+            className="w-full p-2 border rounded mb-4"
           />
-        </div>
-        <div >
-        <div className="flex items-center justify-center m-2">
-          <input
-            type="checkbox"
-            id="isElectric"
-            checked={formData.isElectric}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          <label className="block">רכב חשמלי</label>
+
+          {/* תצוגה של התמונות שנבחרו */}
+          {imagePreview.length > 0 && (
+            <div className="mb-4">
+              <h3 className="font-bold mb-2 text-right">
+                תמונות שנבחרו ({imagePreview.length}):
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {imagePreview.map((preview, index) => (
+                  <div
+                    key={index}
+                    className={`relative border-2 p-2 rounded cursor-pointer transition ${
+                      formData.primaryImageIndex === index
+                        ? "border-green-500 bg-green-50" // סימון התמונה הראשית
+                        : "border-gray-300"
+                    }`}
+                    onClick={() => handleSetPrimaryImage(index)}
+                  >
+                    <img
+                      src={preview}
+                      alt={`Preview ${index}`}
+                      className="w-full h-24 object-cover rounded"
+                    />
+                    {formData.primaryImageIndex === index && (
+                      <div className="absolute top-1 left-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                        ✓
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveImage(index);
+                      }}
+                      className="absolute bottom-1 left-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-gray-600 mt-2 text-right">
+                💡 לחץ על תמונה כדי לבחור אותה כתמונה ראשית (עם סימן ✓)
+              </p>
+            </div>
+          )}
+
+          {/* תצוגה של תמונות קיימות (בעריכה) */}
+          {selectedCar && selectedCar.carImages && (
+            <div>
+              <h3 className="font-bold mb-2 text-right">
+                תמונות קיימות:
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {selectedCar.carImages.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className={`relative border-2 p-2 rounded cursor-pointer transition ${
+                      formData.primaryImageIndex === index
+                        ? "border-green-500 bg-green-50"
+                        : "border-gray-300"
+                    }`}
+                    onClick={() => handleSetPrimaryImage(index)}
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`Existing ${index}`}
+                      className="w-full h-24 object-cover rounded"
+                    />
+                    {formData.primaryImageIndex === index && (
+                      <div className="absolute top-1 left-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                        ✓
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center justify-center m-2">
-          <input
-            type="checkbox"
-            id="isHybrid"
-            checked={formData.isHybrid}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          <label className="block">רכב היברידי</label>
-        </div>
-        </div>
-      </div>
-      <button
-        type="submit"
-        className="p-2 bg-blue-500 text-white rounded w-full"
-      >
-       {selectedCar ? "עדכן רכב" : "הוסף רכב"}
-      </button>
-    </form>
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white p-3 rounded font-bold hover:bg-green-700"
+        >
+          {selectedCar ? "עדכן רכב" : "הוסף רכב"}
+        </button>
+      </form>
+    </div>
   );
 };
 
