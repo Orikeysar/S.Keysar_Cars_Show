@@ -5,14 +5,13 @@ const Filter = ({ onFilter }) => {
   const [kind, setKind] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [maxKilometer, setMaxKilometer] = useState('');
-  const [maxYear, setMaxYear] = useState('');
   const [showFilter, setShowFilter] = useState(false);
   const [isElectric, setIsElectric] = useState(false);
   const [isHybrid, setIsHybrid] = useState(false);
 
   useEffect(() => {
-    onFilter({ kind, maxPrice, maxKilometer, maxYear, isElectric, isHybrid });
-  }, [kind, maxPrice, maxKilometer, maxYear, isElectric, isHybrid, onFilter]);
+    onFilter({ kind, maxPrice, maxKilometer, isElectric, isHybrid });
+  }, [kind, maxPrice, maxKilometer, isElectric, isHybrid, onFilter]);
 
   const handleKindChange = (e) => {
     const value = e.target.value;

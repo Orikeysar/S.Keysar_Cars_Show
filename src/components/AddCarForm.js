@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { db, storage } from "../firebase.config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, serverTimestamp, updateDoc, doc } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
 import Spinner from "./Spinner";
 
 const AddCarForm = ({ onAdd, selectedCar }) => {
@@ -124,7 +123,6 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
       Gear,
       Ownershep,
       EngineKind,
-      fullprice,
       primaryImageIndex,
     } = formData;
 

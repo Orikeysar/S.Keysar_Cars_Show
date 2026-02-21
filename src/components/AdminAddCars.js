@@ -12,6 +12,7 @@ function AdminAddCars() {
   const [filteredCars, setFilteredCars] = useState([]);
   const navigate = useNavigate();
   const [selectedCar, setSelectedCar] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [updating, setUpdating] = useState(false); // ← הוסף זאת
   const [updateResult, setUpdateResult] = useState(null); // ← הוסף זאת
 
@@ -82,6 +83,7 @@ function AdminAddCars() {
   };
 
   // ========== כפתור עדכון כל הרשומות ==========
+  // eslint-disable-next-line no-unused-vars
   const handleUpdateAllCars = async () => {
     setUpdating(true);
     try {

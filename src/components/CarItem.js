@@ -9,21 +9,18 @@ import {
   FaHandPaper,
   FaChevronDown,
   FaChevronUp,
-  FaEdit,
-  FaTrash,
   FaGasPump,
   FaCogs,
   
 } from "react-icons/fa";
 import { IoMdSpeedometer } from "react-icons/io";
-import { Collapse, Button } from "react-bootstrap";
+import { Collapse } from "react-bootstrap";
 
 
 // בתחילת הקובץ - הוסף את carItems כך שהתמונה הראשית תהיה ראשונה
 
 const CarItem = ({ car, handleDeleteCar, handleEditCar }) => {
   const [showModal, setShowModal] = useState(false);
-  const [modalImage, setModalImage] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState(0); // ← אינדקס התמונה הנוכחית
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -33,7 +30,6 @@ const CarItem = ({ car, handleDeleteCar, handleEditCar }) => {
   const isNew = (currentDate - carDate) / (1000 * 60 * 60 * 24) <= 7;
 
   const handleImageClick = (image) => {
-    setModalImage(`${image}`);
     setShowModal(true);
   };
 
