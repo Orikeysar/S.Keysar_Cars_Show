@@ -68,7 +68,7 @@ const CarItem = ({ car, handleDeleteCar, handleEditCar }) => {
         />
         {/* תווית "תמונה ראשית" להיוויסותן */}
         {index === 0 && (
-          <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">
+          <div className="absolute top-2 right-2 bg-clear-500 text-white px-2 py-1 rounded text-xs font-bold">
             📸 
           </div>
         )}
