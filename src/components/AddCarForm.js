@@ -7,6 +7,7 @@ import Spinner from "./Spinner";
 
 const AddCarForm = ({ onAdd, selectedCar }) => {
   const [loading, setLoading] = useState(false);
+  const fileInputRef = React.useRef(null);
   const [formData, setFormData] = useState({
     make: "",
     model: "",
@@ -21,20 +22,26 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
     hand: "",
     kind: "",
     images: [],
+    carImages: [],
     fullprice: "",
     isElectric: false,
     isHybrid: false,
-    primaryImageIndex: 0, // ← שדה חדש
+    primaryImageIndex: 0,
   });
   const [imagePreview, setImagePreview] = useState([]); // תצוגה מקדימה של התמונות
+  const [pendingImagePreview, setPendingImagePreview] = useState(null); // תמונה יחידה המחכה לאישור
+  const [pendingImageFile, setPendingImageFile] = useState(null); // הקובץ שמחכה לאישור
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (selectedCar) {
       setFormData({
         ...selectedCar,
-        primaryImageIndex: selectedCar.primaryImageIndex || 0, // לוודא שיש ערך
+        images: [],
+        carImages: selectedCar.carImages || [],
+        primaryImageIndex: selectedCar.primaryImageIndex || 0,
       });
+      setImagePreview([]);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [selectedCar]);
@@ -50,32 +57,99 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
   // פונקציה לטיפול בבחירת תמונות
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
-    setFormData({
-      ...formData,
-      images: [...formData.images, ...files],
-    });
+    if (files.length === 0) return;
 
-    // יצירת תצוגה מקדימה
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImagePreview((prev) => [...prev, event.target.result]);
-      };
-      reader.readAsDataURL(file);
-    });
+    // הצג את התמונה הראשונה לאישור
+    const file = files[0];
+    setPendingImageFile(file);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPendingImagePreview(event.target.result);
+    };
+    reader.readAsDataURL(file);
+
+    // אם יש עוד תמונות, הוסף אותן לרשימה
+    if (files.length > 1) {
+      const additionalFiles = files.slice(1);
+      setFormData({
+        ...formData,
+        images: [...formData.images, ...additionalFiles],
+      });
+
+      additionalFiles.forEach((file) => {
+        const additionalReader = new FileReader();
+        additionalReader.onload = (event) => {
+          setImagePreview((prev) => [...prev, event.target.result]);
+        };
+        additionalReader.readAsDataURL(file);
+      });
+    }
+  };
+
+  // אישור התמונה
+  const handleConfirmImage = () => {
+    if (pendingImageFile) {
+      setFormData({
+        ...formData,
+        images: [...formData.images, pendingImageFile],
+      });
+
+      setImagePreview((prev) => [...prev, pendingImagePreview]);
+    }
+    
+    setPendingImagePreview(null);
+    setPendingImageFile(null);
+    
+    // אפס את ה-input כדי שיוכל לבחור שוב
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // דחיית התמונה
+  const handleRejectImage = () => {
+    setPendingImagePreview(null);
+    setPendingImageFile(null);
+    
+    // אפס את ה-input
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const adjustPrimaryIndexAfterRemoval = (removedIndex) => {
+    if (formData.primaryImageIndex === removedIndex) {
+      return Math.max(0, removedIndex - 1);
+    }
+
+    if (formData.primaryImageIndex > removedIndex) {
+      return formData.primaryImageIndex - 1;
+    }
+
+    return formData.primaryImageIndex;
   };
 
   // הסרת תמונה
-  const handleRemoveImage = (index) => {
+  const handleRemoveImage = (index, isExisting = false) => {
+    if (isExisting) {
+      const newCarImages = formData.carImages.filter((_, i) => i !== index);
+      const updatedPrimaryIndex = adjustPrimaryIndexAfterRemoval(index);
+
+      setFormData({
+        ...formData,
+        carImages: newCarImages,
+        primaryImageIndex: updatedPrimaryIndex,
+      });
+      return;
+    }
+
     const newImages = formData.images.filter((_, i) => i !== index);
     const newPreview = imagePreview.filter((_, i) => i !== index);
-    
+    const existingCount = formData.carImages.length;
+    const removedCombinedIndex = existingCount + index;
+    const updatedPrimaryIndex = adjustPrimaryIndexAfterRemoval(removedCombinedIndex);
+
     setFormData({
       ...formData,
       images: newImages,
-      // אם הוסרנו את התמונה הראשית, עדכן את primaryImageIndex
-      primaryImageIndex: formData.primaryImageIndex >= newImages.length ? 
-        newImages.length - 1 : formData.primaryImageIndex,
+      primaryImageIndex: updatedPrimaryIndex,
     });
     setImagePreview(newPreview);
   };
@@ -147,6 +221,15 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
 
     // אם זה עריכה של רכב קיים
     if (selectedCar) {
+      let updatedCarImages = formData.carImages || [];
+
+      if (images.length > 0) {
+        const uploadedNewImages = await Promise.all(
+          images.map((image) => handleImageUpload(image))
+        );
+        updatedCarImages = [...updatedCarImages, ...uploadedNewImages];
+      }
+
       const carData = {
         make,
         model,
@@ -163,7 +246,8 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
         kind,
         isElectric,
         isHybrid,
-        primaryImageIndex: primaryImageIndex, // ← שמירת אינדקס התמונה הראשית
+        carImages: updatedCarImages,
+        primaryImageIndex: primaryImageIndex,
         timestamp: serverTimestamp(),
       };
 
@@ -183,6 +267,7 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
         hand: "",
         kind: "",
         images: [],
+        carImages: [],
         isElectric: false,
         isHybrid: false,
         fullprice: "",
@@ -259,6 +344,8 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
       [name]: type === "checkbox" ? checked : value,
     });
   };
+
+  const existingImageCount = formData.carImages.length;
 
   if (loading) return <Spinner />;
 
@@ -420,6 +507,7 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
           <h2 className="text-xl font-bold mb-4 text-right">📷 העלאת תמונות</h2>
 
           <input
+            ref={fileInputRef}
             type="file"
             multiple
             accept="image/*"
@@ -427,45 +515,84 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
             className="w-full p-2 border rounded mb-4"
           />
 
+          {/* דיאלוג תצוגה מקדימה של תמונה */}
+          {pendingImagePreview && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl">
+                <h2 className="text-2xl font-bold mb-4 text-right">🖼️ אישור תמונה</h2>
+                
+                <img
+                  src={pendingImagePreview}
+                  alt="Preview"
+                  className="w-full h-64 object-cover rounded-lg mb-4"
+                />
+
+                <p className="text-gray-700 mb-6 text-right font-medium">
+                  האם אתה רוצה להוסיף תמונה זו?
+                </p>
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={handleRejectImage}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    ❌ שנה
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmImage}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    ✅ אשר
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* תצוגה של התמונות שנבחרו */}
           {imagePreview.length > 0 && (
             <div className="mb-4">
               <h3 className="font-bold mb-2 text-right">
-                תמונות שנבחרו ({imagePreview.length}):
+                תמונות חדשות שנבחרו ({imagePreview.length}):
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {imagePreview.map((preview, index) => (
-                  <div
-                    key={index}
-                    className={`relative border-2 p-2 rounded cursor-pointer transition ${
-                      formData.primaryImageIndex === index
-                        ? "border-green-500 bg-green-50" // סימון התמונה הראשית
-                        : "border-gray-300"
-                    }`}
-                    onClick={() => handleSetPrimaryImage(index)}
-                  >
-                    <img
-                      src={preview}
-                      alt={`Preview ${index}`}
-                      className="w-full h-24 object-cover rounded"
-                    />
-                    {formData.primaryImageIndex === index && (
-                      <div className="absolute top-1 left-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
-                        ✓
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveImage(index);
-                      }}
-                      className="absolute bottom-1 left-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-700"
+                {imagePreview.map((preview, index) => {
+                  const combinedIndex = existingImageCount + index;
+                  return (
+                    <div
+                      key={index}
+                      className={`relative border-2 p-2 rounded cursor-pointer transition ${
+                        formData.primaryImageIndex === combinedIndex
+                          ? "border-green-500 bg-green-50"
+                          : "border-gray-300"
+                      }`}
+                      onClick={() => handleSetPrimaryImage(combinedIndex)}
                     >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+                      <img
+                        src={preview}
+                        alt={`Preview ${index}`}
+                        className="w-full h-24 object-cover rounded"
+                      />
+                      {formData.primaryImageIndex === combinedIndex && (
+                        <div className="absolute top-1 left-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                          ✓
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveImage(index);
+                        }}
+                        className="absolute bottom-1 left-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-700"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
               <p className="text-sm text-gray-600 mt-2 text-right">
                 💡 לחץ על תמונה כדי לבחור אותה כתמונה ראשית (עם סימן ✓)
@@ -474,13 +601,13 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
           )}
 
           {/* תצוגה של תמונות קיימות (בעריכה) */}
-          {selectedCar && selectedCar.carImages && (
+          {formData.carImages && formData.carImages.length > 0 && (
             <div>
               <h3 className="font-bold mb-2 text-right">
-                תמונות קיימות:
+                תמונות קיימות ({formData.carImages.length}):
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {selectedCar.carImages.map((imageUrl, index) => (
+                {formData.carImages.map((imageUrl, index) => (
                   <div
                     key={index}
                     className={`relative border-2 p-2 rounded cursor-pointer transition ${
@@ -500,6 +627,16 @@ const AddCarForm = ({ onAdd, selectedCar }) => {
                         ✓
                       </div>
                     )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveImage(index, true);
+                      }}
+                      className="absolute bottom-1 left-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-700"
+                    >
+                      ✕
+                    </button>
                   </div>
                 ))}
               </div>
